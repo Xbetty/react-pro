@@ -2,21 +2,26 @@ import React from 'react';
 import { Menu, Icon, Layout, Button } from 'antd';
 import styles from './Header.less'
 
-const {Header} = Layout
+const { Header } = Layout
 const MenuItem = Menu.Item;
 
 function HeaderMenu({
-    siderFold,  // 菜单显示隐藏
-    SwitchSider,
-    Logout
+    siderFold,                                  // 侧边栏菜单是否收起
+
+    SwitchSider,                                // 侧边栏菜单收起与展开
+    Logout                                      // 退出登录
 }){
     return(
-        <Header style={{ background: '#fff', padding: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <Header className={styles.header_container}>
+
+            {/* 折叠图标 */}
             <Icon
-                className={styles.trigger}
+                className={styles.icon}
                 type={siderFold ? 'menu-unfold':'menu-fold'}
                 onClick={SwitchSider}
             />
+
+            {/* 退出登录 */}
             <Menu>
                 <MenuItem key="logout" >
                     <Button  onClick={Logout}>退出登录</Button>
