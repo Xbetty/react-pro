@@ -1,68 +1,81 @@
 import React from 'react';
 import { connect } from 'dva';
 
-import { Layout, Breadcrumb} from 'antd';
-import HeaderMenu from './layout/Header';   // 头部菜单
-import SiderMenu from './layout/Sider';     // 侧边栏菜单
+import { Layout, Breadcrumb } from 'antd';
+import HeaderMenu from './layout/Header'; // 头部菜单
+import SiderMenu from './layout/Sider'; // 侧边栏菜单
 import styles from './index.less';
+import Login from '../pages/login/index';
 
 const { Content } = Layout;
 
-function BasicLayout ({dispatch, global, children}) {
+function BasicLayout({ dispatch, global, children, location }) {
   let {
     // namespace,
     siderFold,
-  } = global
+    theme,
+    breadcrumbList,
+  } = global;
 
   // 菜单折叠
-  function SwitchSider() {
+  function SwitchSider(checked) {
     dispatch({ type: 'global/SwitchSider' });
   }
 
+  //   主题修改
+  function changeTheme() {
+    dispatch({ type: 'global/changeTheme' });
+  }
+
   // 退出登录
-  function Logout(){
-    alert('退出登录')
+  function Logout() {
+    alert('退出登录');
   }
 
   // 头部导航属性
   let headerProps = {
     siderFold,
+    theme,
     SwitchSider,
-    Logout
-  }
+    changeTheme,
+    Logout,
+  };
 
   // 侧边栏导航属性
   let siderProps = {
-    siderFold,    // 侧边栏菜单是否收起
+    siderFold, // 侧边栏菜单是否收起
+    theme,
+  };
+  
+  if(location.pathname==='/login'){
+      return <Login/>
   }
 
   return (
     <div className={styles.layout_container}>
-      <Layout >
+      <Layout>
         {/* 侧边栏导航 */}
-        <SiderMenu {...siderProps}/>
+        <SiderMenu {...siderProps} />
 
         <Layout>
           {/* 头部导航 */}
-          <HeaderMenu {...headerProps}/>
+          <HeaderMenu {...headerProps} />
 
           {/* 面包屑 */}
           <Breadcrumb className={styles.breadcrumb_container}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
+            {breadcrumbList.map((item, index) => {
+              return <Breadcrumb.Item key={index}>{item}</Breadcrumb.Item>;
+            })}
           </Breadcrumb>
 
           {/* 内容 */}
-          <Content className={styles.content_container}>
-              {children}
-          </Content>
-          </Layout>
+          <Content className={styles.content_container}>{children}</Content>
+        </Layout>
       </Layout>
     </div>
   );
 }
-function mapStateToProps({global}){
-  return {global};
+function mapStateToProps({ global }) {
+  return { global };
 }
 export default connect(mapStateToProps)(BasicLayout);
