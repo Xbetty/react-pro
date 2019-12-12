@@ -26,4 +26,11 @@ export default {
       },
     }],
   ],
+  proxy: {
+      '/xzt': {
+          target: 'http://111.230.19.105:3000/',
+          changeOrigin: true,
+          pathRewrite: {'^/xzt':''}
+      }
+  }
 }

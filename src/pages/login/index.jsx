@@ -1,33 +1,49 @@
-import { Fragment } from 'react';
-import { Form, Input, Icon, Checkbox, Button } from 'antd';
+import {connect} from 'dva';
+import { Form, Input, Icon, Button } from 'antd';
+import styles from './index.less';
 
 const FormItem = Form.Item;
 
-function login({ form }) {
-  const { getFieldDecorator } = form;
+function login({ form, dispatch, nLogin }) {
+  const { getFieldDecorator, validateFields } = form;
+  console.log('Login', nLogin)
+
+//   let {namespace} = login;
+
+  //   登录
+  function handleSubmit() {
+    validateFields((err, values) => {
+      if (!err) {
+        console.log(values, nLogin, 'values');
+        dispatch({type: 'nLogin/login', payload: values})
+      }
+    });
+  }
+
   return (
-    <Fragment>
-      <Form>
+    <div className={styles.login_container}>
+      <Form className={styles.form_container}>
+        <div className={styles.title}>投票评分管理系统</div>
         {/* 用户名 */}
         <FormItem>
-          {getFieldDecorator('username', {
+          {getFieldDecorator('phone', {
             rules: [{ required: true, message: 'Please input your username!' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
+              placeholder="phone"
             />,
           )}
         </FormItem>
 
         {/* 密码 */}
         <Form.Item>
-          {getFieldDecorator('password', {
+          {getFieldDecorator('pwd', {
             rules: [{ required: true, message: 'Please input your Password!' }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
+              type="passpwdword"
               placeholder="Password"
             />,
           )}
@@ -35,17 +51,17 @@ function login({ form }) {
 
         {/* 登录 */}
         <Form.Item>
-          {getFieldDecorator('remember', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(<Checkbox>Remember me</Checkbox>)}
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+          <Button type="primary" style={{ width: '100%' }} onClick={handleSubmit}>
+            登录
           </Button>
         </Form.Item>
       </Form>
-    </Fragment>
+    </div>
   );
 }
 
-export default Form.create()(login);
+function mapStateToProps({nLogin}){
+    return {nLogin}
+
+}
+export default connect(mapStateToProps)(Form.create()(login));
