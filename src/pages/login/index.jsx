@@ -1,21 +1,23 @@
-import {connect} from 'dva';
-import { Form, Input, Icon, Button } from 'antd';
+import { connect } from 'dva';
+import { Form, Input, Icon, Button, message } from 'antd';
 import styles from './index.less';
+import md5 from 'js-md5';
 
 const FormItem = Form.Item;
 
 function login({ form, dispatch, nLogin }) {
   const { getFieldDecorator, validateFields } = form;
-  console.log('Login', nLogin)
 
-//   let {namespace} = login;
+  //   let {namespace} = login;
 
   //   登录
   function handleSubmit() {
     validateFields((err, values) => {
       if (!err) {
-        console.log(values, nLogin, 'values');
-        dispatch({type: 'nLogin/login', payload: values})
+        values.pwd = md5(values.pwd);
+        dispatch({ type: 'nLogin/login', payload: values });
+      } else {
+          message.error('手机号或密码错误~')
       }
     });
   }
@@ -60,8 +62,7 @@ function login({ form, dispatch, nLogin }) {
   );
 }
 
-function mapStateToProps({nLogin}){
-    return {nLogin}
-
+function mapStateToProps({ nLogin }) {
+  return { nLogin };
 }
 export default connect(mapStateToProps)(Form.create()(login));

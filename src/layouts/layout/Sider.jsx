@@ -18,7 +18,7 @@ function SiderMenu({ siderFold, theme }) {
           <div>
             <img src={logo} className={styles.unfold_logo} alt="logo" />
             <span className={styles.name} style={{ color: theme ? '#1890ff' : '#fff' }}>
-              xx机构名称
+              投票评分管理系统
             </span>
           </div>
         )}
