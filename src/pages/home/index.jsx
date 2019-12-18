@@ -1,6 +1,7 @@
-import {  Divider, Tag } from 'antd';
+import { Divider, Tag } from 'antd';
 import { connect } from 'dva';
 import CommonTable from '../../components/commonTable/index';
+import CommonSearch from '../../components/commonSearch/index';
 function home() {
   const columns = [
     {
@@ -52,7 +53,7 @@ function home() {
     },
   ];
 
-  const data = [
+  const dataSource = [
     {
       key: '1',
       name: 'John Brown',
@@ -75,11 +76,75 @@ function home() {
       tags: ['cool', 'teacher'],
     },
   ];
+  let num, row;
+  function handleSizeChange(page, pageSize) {
+    console.log('page', page, row);
+    num = page;
+    row = pageSize;
+  }
+  function handlePageChange(current, size) {
+    console.log('current', current, size);
+    num = current;
+    row = size;
+  }
 
+  // 搜索组件属性
+  const searchProps = {
+    fields: [
+      {
+        type: 'input',
+        key: 'name',
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+      {
+        type: 'input',
+        key: 'name',
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+      {
+        type: 'input',
+        key: 'name',
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+      {
+        type: 'input',
+        key: 'name',
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+      {
+        type: 'input',
+        key: 'name',
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+    ],
+  };
+
+  // 表格组件属性
+  const tableProps = {
+    columns,
+    dataSource,
+    page: num,
+    row: row,
+    total: 300,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    handleSizeChange,
+    handlePageChange,
+  };
   return (
     <div>
-      <h1>home</h1>
-      <CommonTable columns={columns} dataSource={data} />
+      <CommonSearch {...searchProps} />
+      <CommonTable {...tableProps} />
     </div>
   );
 }
