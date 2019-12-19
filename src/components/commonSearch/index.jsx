@@ -1,5 +1,5 @@
-import { Fragment } from 'react';
-import { Form, Input, Cascader, Button, Icon } from 'antd';
+import { Fragment, useState } from 'react';
+import { Form, Input, Cascader, Button, Icon, Drawer } from 'antd';
 import styles from './index.less';
 
 const formItemLayout = {
@@ -12,18 +12,27 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
+
 /**
- * @description:
+ * @description: 搜索组件
  * @param {Array} fields - 表单组
  * @param {Array} fields - 表单组
  * @param {Array} btns - 按钮组
- *
  * @return:
  */
+
 function CommonSearch(props) {
   const FormItem = Form.Item;
+  const [visible, setVisible] = useState(false);
+  function showDrawer() {
+    setVisible(true);
+  }
 
-  let { fields, btns, form } = props;
+  function onClose() {
+    setVisible(false);
+  }
+
+  let { fields, btns, form, superVisible } = props;
   let { getFieldDecorator } = form;
 
   // 表单控件集合
@@ -76,7 +85,6 @@ function CommonSearch(props) {
       // options是否为数组
       throw new Error('options is not Array');
     }
-    let { getFieldDecorator } = this.props.form;
     return (
       <FormItem>
         {getFieldDecorator(item.key, {
@@ -97,32 +105,76 @@ function CommonSearch(props) {
   }
 
   return (
-    <Form layout="vertical" className={styles.container}>
-      {/* 搜索表单 */}
-      {!!fields &&
-        fields.length > 0 &&
-        fields.map((item, index) => {
-          if (item.key) {
-            return <Fragment key={index}>{formTypes[item.type](item)}</Fragment>;
-          }
-          return null;
-        })}
+    <Form layout="vertical" className={styles.formContainer}>
+      {/* 基本搜索 */}
+      <div className={styles.commonContainer}>
+        {/* 搜索表单 */}
+        {!!fields &&
+          fields.length > 0 &&
+          fields.map((item, index) => {
+            if (item.key) {
+              return <Fragment key={index}>{formTypes[item.type](item)}</Fragment>;
+            }
+            return null;
+          })}
 
-      {/* 搜索按钮 */}
-      {!!fields && fields.length > 0 && (
-        <Button type="primary" className={styles.button}>
-          <Icon type="search" />
-          搜索
-        </Button>
-      )}
+        {/* 搜索按钮 */}
+        {!!fields && fields.length > 0 && (
+          <Button type="primary" className={styles.button}>
+            <Icon type="search" />
+            搜索
+          </Button>
+        )}
 
-      {/* 重置按钮 */}
-      {!!fields && fields.length > 0 && (
-        <Button className={styles.button}>
-          <Icon type="reload" />
-          重置
-        </Button>
-      )}
+        {/* 重置按钮 */}
+        {!!fields && fields.length > 0 && (
+          <Button className={styles.button}>
+            <Icon type="reload" />
+            重置
+          </Button>
+        )}
+      </div>
+
+      {/* 操作按钮 */}
+      <div className={styles.btnContainer}>
+        {!!btns &&
+          btns.length &&
+          btns.map((item, index) => {
+            return (
+              <Button
+                className={styles.button}
+                key={index}
+                style={item.style}
+                type={item.type || 'primary'}
+                icon={item.icon || 'plus'}
+                onClick={item.handleBtnClick}
+              >
+                {item.label || '新增'}
+              </Button>
+            );
+          })}
+        {!!superVisible && (
+          <Button onClick={showDrawer}>
+            高级搜索
+            <Icon type="double-right" />
+          </Button>
+        )}
+      </div>
+
+      {/* 高级搜索 */}
+      <div className={styles.superContainer}>
+        <Drawer
+          title="Basic Drawer"
+          placement="right"
+          closable={false}
+          onClose={onClose}
+          visible={visible}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
+      </div>
     </Form>
   );
 }

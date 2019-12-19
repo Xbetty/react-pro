@@ -88,6 +88,10 @@ function home() {
     row = size;
   }
 
+  function addStudent() {
+    console.log('添加学生');
+  }
+
   // 搜索组件属性
   const searchProps = {
     fields: [
@@ -127,6 +131,12 @@ function home() {
         style: { width: '200px' },
       },
     ],
+    btns: [
+      // { label: '新增学员', type: 'primary', handleBtnClick: addStudent },
+      { label: '批量分配', type: 'primary', handleBtnClick: addStudent },
+      { label: '批量分配', type: 'primary', handleBtnClick: addStudent },
+    ],
+    superVisible: true,
   };
 
   // 表格组件属性
