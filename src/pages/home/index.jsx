@@ -2,6 +2,8 @@ import { Divider, Tag } from 'antd';
 import { connect } from 'dva';
 import CommonTable from '../../components/commonTable/index';
 import CommonSearch from '../../components/commonSearch/index';
+import moment from 'moment';
+
 function home() {
   const columns = [
     {
@@ -103,31 +105,30 @@ function home() {
         style: { width: '200px' },
       },
       {
-        type: 'input',
-        key: 'name',
+        type: 'select',
+        key: 'age',
+        options: [
+          { value: 1, label: '香蕉' },
+          { value: 2, label: '苹果' },
+          { value: 3, label: '火龙果' },
+        ],
         initialValue: '',
         placeholder: '请输入姓名',
         style: { width: '200px' },
       },
       {
-        type: 'input',
-        key: 'name',
+        type: 'datePicker',
+        key: 'sex',
+        showTime: true,
         initialValue: '',
         placeholder: '请输入姓名',
         style: { width: '200px' },
       },
       {
-        type: 'input',
-        key: 'name',
+        type: 'rangePicker',
+        key: 'date',
+        showTime: true,
         initialValue: '',
-        placeholder: '请输入姓名',
-        style: { width: '200px' },
-      },
-      {
-        type: 'input',
-        key: 'name',
-        initialValue: '',
-        placeholder: '请输入姓名',
         style: { width: '200px' },
       },
     ],
@@ -137,8 +138,12 @@ function home() {
       { label: '批量分配', type: 'primary', handleBtnClick: addStudent },
     ],
     superVisible: true,
+    OnSearch,
   };
-
+  // 搜索
+  function OnSearch(values) {
+    console.log(values, 'values');
+  }
   // 表格组件属性
   const tableProps = {
     columns,

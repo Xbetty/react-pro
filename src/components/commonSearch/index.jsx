@@ -1,63 +1,148 @@
 import { Fragment, useState } from 'react';
-import { Form, Input, Cascader, Button, Icon, Drawer } from 'antd';
+import { Form, Input, Select, DatePicker, Cascader, Button, Icon, Drawer } from 'antd';
 import styles from './index.less';
+import locale from 'antd/es/date-picker/locale/zh_CN';
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
+const FormItem = Form.Item;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 /**
  * @description: 搜索组件
- * @param {Array} fields - 表单组
- * @param {Array} fields - 表单组
- * @param {Array} btns - 按钮组
+ * @param {array} fields - 表单组
+ * @param {array} fields - 表单组
+ * @param {array} btns - 按钮组
  * @return:
  */
 
 function CommonSearch(props) {
-  const FormItem = Form.Item;
   const [visible, setVisible] = useState(false);
-  function showDrawer() {
-    setVisible(true);
-  }
 
-  function onClose() {
-    setVisible(false);
-  }
-
-  let { fields, btns, form, superVisible } = props;
-  let { getFieldDecorator } = form;
+  // 属性值
+  let { fields, btns, form, superVisible, superFields, OnSearch, OnReset } = props;
+  let { getFieldDecorator, validateFields, resetFields } = form;
 
   // 表单控件集合
   let formTypes = {
     input: createInput,
+    select: createSelect,
     cascader: createCascader,
+    datePicker: createDatePicker,
+    rangePicker: createRangePicker,
   };
 
+  // 提交搜索
+  function onSearch() {
+    // let allFields = [...fields, ...superFields];
+    validateFields((err, values) => {
+      if (err) return;
+      if (!OnSearch) {
+        throw new Error('OnSearch undefined');
+      } else {
+        OnSearch(values);
+      }
+    });
+  }
+
+  // 重置搜索表单
+  function onReset() {
+    resetFields();
+    // if (!OnReset) {
+    //   throw new Error('OnReset undefined');
+    // } else {
+    //   OnReset();
+    // }
+  }
+
+  // 显示高级搜索表单
+  function showDrawer() {
+    setVisible(true);
+  }
+
+  // 隐藏高级搜索表单
+  function onClose() {
+    setVisible(false);
+  }
+
   /**
-   * @description: 输入框组件
+   * @description: Input控件
    * @author： xiongziting
    * @param {object} item - 输入框组件属性对象
    * @param {string} item.key - 字段名
    * @param {array} [item.initialValue] - 默认值
-   * @param {string} [item.placeholder="请选择"] - 输入框占位文本
-   * @param {object} [item.styles] - 自定义样式
+   * @param {string} [item.placeholder="请输入"] - 输入框占位文本
+   * @param {object} [item.style] - 自定义样式
    * @return:
    */
-  // 创建Input组件
+
   function createInput(item) {
     return (
       <FormItem>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || undefined,
-        })(<Input placeholder={item.placeholder || '请输入'} style={item.style} />)}
+        })(
+          <Input
+            className={styles.formItem}
+            allowClear
+            placeholder={item.placeholder || '请输入'}
+            style={item.style}
+          />,
+        )}
+      </FormItem>
+    );
+  }
+
+  /**
+   * @description: 下拉选择Select组件
+   * @author: xiongziting
+   * @param {object} item - 下拉框组件属性对象
+   * @param {string} item.key - 字段名
+   * @param {array} item.options - 选项数组
+   * @param {boolean} [item.showSearch=false] - 搜索
+   * @param {array} [item.initialValue] - 默认值
+   * @param {boolean} [item.disabled=false]
+   * @param {string} [item.placeholder="请选择"] - 输入框占位文本
+   * @param {object} [item.styles] - 自定义样式
+   * @return:
+   */
+
+  function createSelect(item) {
+    if (!item.options) {
+      // 判断options是否传入
+      throw new Error('select options undefined');
+    }
+    if (!window.checkObjType(item.options, 'Array')) {
+      // 检测options是否是数组
+      throw new Error('options is not Array');
+    }
+    let opt_value = item.opt_value || 'value';
+    let opt_label = item.opt_label || 'label';
+    return (
+      <FormItem>
+        {getFieldDecorator(item.key, {
+          initialValue: item.initialValue || undefined,
+        })(
+          <Select
+            className={styles.formItem}
+            allowClear
+            optionFilterProp="children"
+            notFoundContent="未找到搜索项"
+            disabled={item.disabled || false}
+            showSearch={item.showSearch || true}
+            style={item.style}
+            placeholder={item.placeholder || '请选择'}
+          >
+            {!!item.options &&
+              item.options.length > 0 &&
+              item.options.map((opt, index) => {
+                return (
+                  <Option key={index} value={opt[opt_value]}>
+                    {opt[opt_label]}
+                  </Option>
+                );
+              })}
+          </Select>,
+        )}
       </FormItem>
     );
   }
@@ -66,6 +151,7 @@ function CommonSearch(props) {
    * @description: 级联选择组件
    * @author：xiongziting
    * @param {object} item -  级联选择属性对象
+   * @param {string} item.key - 字段名
    * @param {array} item.options - 可选项数据源
    * @param {object} [item.fieldNames] - 自定义字段名
    * @example { label: 'name', value: 'code', children: 'items' }
@@ -75,13 +161,13 @@ function CommonSearch(props) {
    * @param {object} [item.styles] - 自定义样式
    * @return:
    */
-  // 创建级联选择
+
   function createCascader(item) {
     if (!item.options) {
       // options是否传入
       throw new Error('cascader options undefined');
     }
-    if (!window._COM_FUNC.isType('Array')(item.options)) {
+    if (!window.checkObjType(item.options, 'Array')) {
       // options是否为数组
       throw new Error('options is not Array');
     }
@@ -91,13 +177,80 @@ function CommonSearch(props) {
           initialValue: item.initialValue || [],
         })(
           <Cascader
+            className={styles.formItem}
             allowClear
             notFoundContent="未找到搜索项"
             options={item.options}
             fieldNames={item.fieldNames}
             size={item.size || 'small'}
-            style={item.styles}
+            style={item.style}
             placeholder={item.placeholder || '请选择'}
+          />,
+        )}
+      </FormItem>
+    );
+  }
+  /**
+   * @description: 日期选择DatePicker组件
+   * @author: xiongziting
+   * @param {object} item - 组件属性对象
+   * @param {string} item.key - 字段名
+   * @param {string} [item.format="YYYY-MM-DD HH:mm:ss"] - 日期格式
+   * @param {boolean} [item.showTime=false] - 是否显示时间
+   * @param {string} [item.size="default"] 控件大小
+   * @param {string} [item.placeholder="请选择"] - 输入框占位文本
+   * @param {object} [item.styles] - 自定义样式
+   * @return:
+   */
+
+  function createDatePicker(item) {
+    return (
+      <FormItem>
+        {getFieldDecorator(item.key, {
+          initialValue: item.initialValue || undefined,
+        })(
+          <DatePicker
+            className={styles.formItem}
+            locale={locale}
+            allowClear
+            format={item.format || 'YYYY-MM-DD HH:mm:ss'}
+            showTime={item.showTime || false}
+            size={item.size || 'default'}
+            style={item.style}
+            placeholder={item.placeholder || '请选择'}
+          />,
+        )}
+      </FormItem>
+    );
+  }
+
+  /**
+   * @description: 日期范围选择RangePicker组件
+   * @author: xiongziting
+   * @param {object} item - 组件属性对象
+   * @param {string} item.key - 字段名
+   * @param {string} [item.format="YYYY-MM-DD HH:mm:ss"] - 日期格式
+   * @param {boolean} [item.showTime=false] - 是否显示时间
+   * @param {string} [item.size="default"] 控件大小
+   * @param {string} [item.placeholder="请选择"] - 输入框占位文本
+   * @param {object} [item.styles] - 自定义样式
+   * @return:
+   */
+
+  function createRangePicker(item) {
+    return (
+      <FormItem>
+        {getFieldDecorator(item.key, {
+          initialValue: item.initialValue || undefined,
+        })(
+          <RangePicker
+            className={styles.formItem}
+            locale={locale}
+            allowClear
+            format={item.format || 'YYYY-MM-DD HH:mm:ss'}
+            showTime={item.showTime || false}
+            size={item.size || 'default'}
+            style={item.style}
           />,
         )}
       </FormItem>
@@ -120,7 +273,7 @@ function CommonSearch(props) {
 
         {/* 搜索按钮 */}
         {!!fields && fields.length > 0 && (
-          <Button type="primary" className={styles.button}>
+          <Button type="primary" className={styles.button} onClick={onSearch}>
             <Icon type="search" />
             搜索
           </Button>
@@ -128,7 +281,7 @@ function CommonSearch(props) {
 
         {/* 重置按钮 */}
         {!!fields && fields.length > 0 && (
-          <Button className={styles.button}>
+          <Button className={styles.button} onClick={onReset}>
             <Icon type="reload" />
             重置
           </Button>
@@ -155,7 +308,7 @@ function CommonSearch(props) {
           })}
         {!!superVisible && (
           <Button onClick={showDrawer}>
-            高级搜索
+            更多筛选
             <Icon type="double-right" />
           </Button>
         )}

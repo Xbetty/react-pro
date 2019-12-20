@@ -30,6 +30,7 @@ function commonTable(props) {
   return (
     <ConfigProvider locale={zhCN}>
       <Table
+        className={styles.tableContainer}
         columns={columns}
         dataSource={dataSource}
         pagination={{
