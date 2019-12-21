@@ -2,6 +2,16 @@ import { Fragment, useState } from 'react';
 import { Form, Input, Select, DatePicker, Cascader, Button, Icon, Drawer } from 'antd';
 import styles from './index.less';
 import locale from 'antd/es/date-picker/locale/zh_CN';
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 20 },
+  },
+};
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -16,7 +26,7 @@ const { RangePicker } = DatePicker;
  */
 
 function CommonSearch(props) {
-  const [visible, setVisible] = useState(false);
+  const [superFormVisible, setSuperFormVisible] = useState(false);
 
   // 属性值
   let { fields, btns, form, superVisible, superFields, OnSearch, OnReset } = props;
@@ -54,14 +64,9 @@ function CommonSearch(props) {
     // }
   }
 
-  // 显示高级搜索表单
-  function showDrawer() {
-    setVisible(true);
-  }
-
-  // 隐藏高级搜索表单
-  function onClose() {
-    setVisible(false);
+  // 显示隐藏高级搜索表单
+  function toggleSuperForm() {
+    setSuperFormVisible(!superFormVisible);
   }
 
   /**
@@ -77,12 +82,12 @@ function CommonSearch(props) {
 
   function createInput(item) {
     return (
-      <FormItem>
+      <FormItem label={item.label}>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || undefined,
         })(
           <Input
-            className={styles.formItem}
+            className={styles.form_item_container}
             allowClear
             placeholder={item.placeholder || '请输入'}
             style={item.style}
@@ -118,12 +123,12 @@ function CommonSearch(props) {
     let opt_value = item.opt_value || 'value';
     let opt_label = item.opt_label || 'label';
     return (
-      <FormItem>
+      <FormItem label={item.label}>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || undefined,
         })(
           <Select
-            className={styles.formItem}
+            className={styles.form_item_container}
             allowClear
             optionFilterProp="children"
             notFoundContent="未找到搜索项"
@@ -172,12 +177,12 @@ function CommonSearch(props) {
       throw new Error('options is not Array');
     }
     return (
-      <FormItem>
+      <FormItem label={item.label}>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || [],
         })(
           <Cascader
-            className={styles.formItem}
+            className={styles.form_item_container}
             allowClear
             notFoundContent="未找到搜索项"
             options={item.options}
@@ -205,12 +210,12 @@ function CommonSearch(props) {
 
   function createDatePicker(item) {
     return (
-      <FormItem>
+      <FormItem label={item.label}>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || undefined,
         })(
           <DatePicker
-            className={styles.formItem}
+            className={styles.form_item_container}
             locale={locale}
             allowClear
             format={item.format || 'YYYY-MM-DD HH:mm:ss'}
@@ -239,12 +244,12 @@ function CommonSearch(props) {
 
   function createRangePicker(item) {
     return (
-      <FormItem>
+      <FormItem label={item.label}>
         {getFieldDecorator(item.key, {
           initialValue: item.initialValue || undefined,
         })(
           <RangePicker
-            className={styles.formItem}
+            className={styles.form_item_container}
             locale={locale}
             allowClear
             format={item.format || 'YYYY-MM-DD HH:mm:ss'}
@@ -258,9 +263,9 @@ function CommonSearch(props) {
   }
 
   return (
-    <Form layout="vertical" className={styles.formContainer}>
+    <Form layout="vertical" className={styles.form_container} {...formItemLayout} >
       {/* 基本搜索 */}
-      <div className={styles.commonContainer}>
+      <div className={styles.common_container}>
         {/* 搜索表单 */}
         {!!fields &&
           fields.length > 0 &&
@@ -288,8 +293,8 @@ function CommonSearch(props) {
         )}
       </div>
 
-      {/* 操作按钮 */}
-      <div className={styles.btnContainer}>
+      {/* 操作按钮组 */}
+      <div className={styles.btn_container}>
         {!!btns &&
           btns.length &&
           btns.map((item, index) => {
@@ -307,7 +312,7 @@ function CommonSearch(props) {
             );
           })}
         {!!superVisible && (
-          <Button onClick={showDrawer}>
+          <Button onClick={toggleSuperForm}>
             更多筛选
             <Icon type="double-right" />
           </Button>
@@ -315,19 +320,20 @@ function CommonSearch(props) {
       </div>
 
       {/* 高级搜索 */}
-      <div className={styles.superContainer}>
-        <Drawer
-          title="Basic Drawer"
-          placement="right"
-          closable={false}
-          onClose={onClose}
-          visible={visible}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-        </Drawer>
-      </div>
+      {!!superFormVisible && <div className={styles.super_container}>
+        <div className={styles.super_header_container}>
+          <span>高级搜索</span>
+          <Icon type="close" onClick={toggleSuperForm} />
+        </div>
+        <div className={styles.super_body_container}>
+          {!!superFields && superFields.length>0 && superFields.map((item, index) => {
+            if (item.key) {
+              return <Fragment key={index}>{formTypes[item.type](item)}</Fragment>;
+            }
+            return null;
+          })}
+        </div>
+      </div>}
     </Form>
   );
 }

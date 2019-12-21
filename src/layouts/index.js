@@ -1,3 +1,11 @@
+/*
+ * @Author: xzt
+ * @Date: 2019-12-13 13:57:34
+ * @LastEditors  : xzt
+ * @LastEditTime : 2019-12-21 18:16:52
+ * @Description:
+ * @FilePath: \react-pro\src\layouts\index.js
+ */
 import React from 'react';
 import { connect } from 'dva';
 
@@ -15,6 +23,7 @@ function BasicLayout({ dispatch, global, children, location }) {
     siderFold,
     theme,
     breadcrumbList,
+    selectedKeys,
   } = global;
 
   // 菜单折叠
@@ -45,10 +54,16 @@ function BasicLayout({ dispatch, global, children, location }) {
   let siderProps = {
     siderFold, // 侧边栏菜单是否收起
     theme,
+    selectedKeys,
+    handleMenuSelect
   };
-  
-  if(location.pathname==='/login'){
-      return <Login/>
+  function handleMenuSelect({ key }) {
+    console.log(key, 'key');
+    dispatch({ type: 'global/updateState', payload: { selectedKeys: [key] } });
+  }
+
+  if (location.pathname === '/login') {
+    return <Login />;
   }
 
   return (

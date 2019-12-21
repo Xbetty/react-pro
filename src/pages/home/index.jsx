@@ -100,6 +100,7 @@ function home() {
       {
         type: 'input',
         key: 'name',
+        // label: '姓名：',
         initialValue: '',
         placeholder: '请输入姓名',
         style: { width: '200px' },
@@ -127,7 +128,7 @@ function home() {
       {
         type: 'rangePicker',
         key: 'date',
-        showTime: true,
+        showTime: false,
         initialValue: '',
         style: { width: '200px' },
       },
@@ -138,6 +139,25 @@ function home() {
       { label: '批量分配', type: 'primary', handleBtnClick: addStudent },
     ],
     superVisible: true,
+    superFields: [
+      {
+        type: 'datePicker',
+        key: 'sex',
+        // label: '姓名：',
+        showTime: true,
+        initialValue: '',
+        placeholder: '请输入姓名',
+        style: { width: '200px' },
+      },
+      {
+        type: 'rangePicker',
+        key: 'date',
+        // label: '年龄：',
+        showTime: false,
+        initialValue: '',
+        style: { width: '200px' },
+      },
+    ],
     OnSearch,
   };
   // 搜索
