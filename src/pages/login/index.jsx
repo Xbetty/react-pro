@@ -25,7 +25,7 @@ function login({ form, dispatch, nLogin }) {
   return (
     <div className={styles.login_container}>
       <Form className={styles.form_container}>
-        <div className={styles.title}>投票评分管理系统</div>
+        <div className={styles.title}>一只小熊熊的管理系统</div>
         {/* 用户名 */}
         <FormItem>
           {getFieldDecorator('phone', {

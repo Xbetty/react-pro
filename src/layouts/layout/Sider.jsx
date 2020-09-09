@@ -22,7 +22,7 @@ function SiderMenu({ siderFold, theme, selectedKeys,handleMenuSelect }) {
           <div>
             <img src={logo} className={styles.unfold_logo} alt="logo" />
             <span className={styles.name} style={{ color: theme ? '#1890ff' : '#fff' }}>
-              投票评分管理系统
+              Xbetty的后台系统
             </span>
           </div>
         )}
